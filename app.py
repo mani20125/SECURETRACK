@@ -9,10 +9,9 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
-class User(UserMixin):
-    def __init__(self, id, username):
-        self.id = id
-        self.username = username
+
+
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -28,28 +27,29 @@ def get_db_connection():
     conn.row_factory = sqlite3.Row
     return conn
 
+
+
+
+@app.route('/logout')
+class User(UserMixin):
+    def __init__(self, id=1, username='admin'):
+        self.id = id
+        self.username = username
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        
-        # Skip database - use demo login
         if username == 'admin' and password == 'admin123':
             user = User()
-            user.id = 1
-            user.authenticated = True
             login_user(user)
-            flash('Logged in successfully!', 'success')
+            flash('Login successful!', 'success')
             next_page = request.args.get('next', url_for('track'))
             return redirect(next_page)
-        else:
-            flash('Invalid credentials. Try: admin/admin123', 'danger')
-    
+        flash('Use: admin/admin123', 'danger')
     return render_template('login.html')
 
-
-@app.route('/logout')
 @login_required
 def logout():
     logout_user()
@@ -106,4 +106,5 @@ def update_gps(tracking_id):
 
 if __name__ == '__main__':
     app.run(debug=True)
+
 
