@@ -22,6 +22,16 @@ def get_db_connection():
     conn = sqlite3.connect('database.db')
     conn.row_factory = sqlite3.Row
     return conn
+def init_db():
+    conn = sqlite3.connect('database.db')
+    conn.execute('CREATE TABLE IF NOT EXISTS couriers (id INTEGER PRIMARY KEY, tracking_id TEXT UNIQUE, sender TEXT, receiver TEXT)')
+    conn.execute('CREATE TABLE IF NOT EXISTS locations (id INTEGER PRIMARY KEY, courier_id INTEGER, latitude REAL, longitude REAL, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)')
+    conn.commit()
+    conn.close()
+
+# Create tables on startup
+init_db()
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -93,5 +103,6 @@ def update_gps(tracking_id):
 
 if __name__ == '__main__':
     app.run()
+
 
 
