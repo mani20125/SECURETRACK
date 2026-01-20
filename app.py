@@ -92,4 +92,6 @@ def update_gps(tracking_id):
     return redirect(url_for('track'))
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
+
+
