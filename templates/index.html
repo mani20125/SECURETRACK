@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Active Couriers</h1>
+<ul class="list-group">
+{% for courier in couriers %}
+<li class="list-group-item">
+    <strong>{{ courier.tracking_id }}</strong> - {{ courier.status }} 
+    <form method="post" style="display:inline;">
+        <input type="hidden" name="tracking_id" value="{{ courier.tracking_id }}">
+        <button class="btn btn-sm btn-info">Track</button>
+    </form>
+</li>
+{% endfor %}
+<a href="/admin" class="btn btn-primary mt-3">Admin Panel</a>
+</ul>
+{% endblock %}
