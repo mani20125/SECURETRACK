@@ -4,37 +4,24 @@ import sqlite3
 import random
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'securetrack_secret_key_change_in_production'
+app.config['SECRET_KEY'] = 'securetrack2026'
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
-
-
-
+class User(UserMixin):
+    def __init__(self, id=1, username='admin'):
+        self.id = id
+        self.username = username
 
 @login_manager.user_loader
 def load_user(user_id):
-    conn = get_db_connection()
-    user = conn.execute('SELECT * FROM users WHERE id = ?', (user_id,)).fetchone()
-    conn.close()
-    if user:
-        return User(user['id'], user['username'])
-    return None
+    return User(id=int(user_id))
 
 def get_db_connection():
     conn = sqlite3.connect('database.db')
     conn.row_factory = sqlite3.Row
     return conn
-
-
-
-
-@app.route('/logout')
-class User(UserMixin):
-    def __init__(self, id=1, username='admin'):
-        self.id = id
-        self.username = username
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -50,6 +37,7 @@ def login():
         flash('Use: admin/admin123', 'danger')
     return render_template('login.html')
 
+@app.route('/logout')
 @login_required
 def logout():
     logout_user()
@@ -94,7 +82,6 @@ def update_gps(tracking_id):
     conn = get_db_connection()
     courier = conn.execute('SELECT * FROM couriers WHERE tracking_id = ?', (tracking_id,)).fetchone()
     if courier:
-        # Simulate real GPS movement Hyderabad -> Bangalore
         lat = 17.3850 + random.uniform(-0.1, 0.1)
         lng = 78.4867 + random.uniform(0, 1.0)
         conn.execute('INSERT INTO locations (courier_id, latitude, longitude) VALUES (?, ?, ?)',
@@ -106,5 +93,3 @@ def update_gps(tracking_id):
 
 if __name__ == '__main__':
     app.run(debug=True)
-
-
